@@ -41,6 +41,15 @@ seedsOfSTAmuons = SimMuon.MCTruth.SeedToTrackProducer_cfi.SeedToTrackProducer.cl
 seedsOfSTAmuons.L2seedsCollection = cms.InputTag("ancientMuonSeed")
 seedsOfSTAmuons_seq = cms.Sequence( seedsOfSTAmuons )
 
+
+import SimMuon.MCTruth.onlineToOfflineSeed_cfi
+hltL2seedsOff = SimMuon.MCTruth.onlineToOfflineSeed_cfi.onlineToOfflineSeed.clone()
+hltL2seedsOff.L2seedsCollection = cms.InputTag("hltL2MuonSeeds")
+
+hltL2Seeds = SimMuon.MCTruth.SeedToTrackProducer_cfi.SeedToTrackProducer.clone()
+hltL2Seeds.L2seedsCollection = cms.InputTag("hltL2seedsOff")
+hltL2Seeds_seq = cms.Sequence( hltL2seedsOff * hltL2Seeds ) 
+
 #
 # Associators for Full Sim + Reco:
 #
@@ -164,6 +173,7 @@ tpToTevFirstMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssoc
 tpToTevPickyMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToTevDytMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL3TkMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
+tpToL2SeedAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL2MuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL2UpdMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL3MuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
@@ -242,6 +252,13 @@ tpToL3TkMuonAssociation.UseMuon = False
 tpToL3TkMuonAssociation.ignoreMissingTrackCollection = True
 tpToL3TkMuonAssociation.UseSplitting = False
 tpToL3TkMuonAssociation.UseGrouped = False
+
+tpToL2SeedAssociation.tpTag = 'mix:MergedTrackTruth'
+tpToL2SeedAssociation.tracksTag = 'hltL2Seeds'
+tpToL2SeedAssociation.DTrechitTag = 'hltDt1DRecHits'
+tpToL2SeedAssociation.UseTracker = False
+tpToL2SeedAssociation.UseMuon = True
+tpToL2SeedAssociation.ignoreMissingTrackCollection = True
 
 tpToL2MuonAssociation.tpTag = 'mix:MergedTrackTruth'
 tpToL2MuonAssociation.tracksTag = 'hltL2Muons'
@@ -336,7 +353,7 @@ muonAssociationCosmic_seq = cms.Sequence(
 #    +(tpToTkCosmicTrackAssociation+tpToStaCosmicTrackAssociation+tpToGlbCosmicTrackAssociation)
 )
 muonAssociationHLT_seq = cms.Sequence(
-    (tpToL2MuonAssociation+tpToL2UpdMuonAssociation+tpToL3MuonAssociation+tpToL3TkMuonAssociation)
+    (hltL2Seeds_seq+tpToL2SeedAssociation+tpToL2MuonAssociation+tpToL2UpdMuonAssociation+tpToL3MuonAssociation+tpToL3TkMuonAssociation)
 #    +(tpToL2TrackAssociation+tpToL2UpdTrackAssociation+tpToL3TrackAssociation+tpToL3TkTrackTrackAssociation)
 )
 
