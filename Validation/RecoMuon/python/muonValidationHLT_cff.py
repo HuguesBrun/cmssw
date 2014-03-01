@@ -6,6 +6,7 @@ from Validation.RecoMuon.associators_cff import *
 # Configurations for MuonTrackValidators
 import Validation.RecoMuon.MuonTrackValidator_cfi
 
+
 l2MuonTrackV = Validation.RecoMuon.MuonTrackValidator_cfi.muonTrackValidator.clone()
 l2MuonTrackV.label_tp_effic = 'mix:MergedTrackTruth'
 l2MuonTrackV.label = ('hltL2Muons',)
@@ -61,6 +62,18 @@ l3TkMuonMuTrackV.ignoremissingtrackcollection=True
 l3TkMuonMuTrackV.usetracker = True
 l3TkMuonMuTrackV.usemuon = False
 
+l2SeedMuTrackV = Validation.RecoMuon.MuonTrackValidator_cfi.muonTrackValidator.clone()
+l2SeedMuTrackV.label_tp_effic = 'mix:MergedTrackTruth'
+l2SeedMuTrackV.associatormap = 'tpToL2SeedAssociation'
+l2SeedMuTrackV.label = ('hltL2Seeds',)
+l2SeedMuTrackV.associators = ('MuonAssociationByHits',)
+l2SeedMuTrackV.dirName = 'HLT/Muon/MultiTrack/'
+#l2MuonMuTrackV.beamSpot = 'hltOfflineBeamSpot'
+l2SeedMuTrackV.ignoremissingtrackcollection=True
+l2SeedMuTrackV.usetracker = False
+l2SeedMuTrackV.usemuon = True
+
+
 l2MuonMuTrackV = Validation.RecoMuon.MuonTrackValidator_cfi.muonTrackValidator.clone()
 l2MuonMuTrackV.label_tp_effic = 'mix:MergedTrackTruth'
 l2MuonMuTrackV.associatormap = 'tpToL2MuonAssociation'
@@ -97,7 +110,7 @@ l3MuonMuTrackV.usemuon = True
 
 # # Muon HLT validation sequence
 muonValidationHLT_seq = cms.Sequence(
-    l2MuonMuTrackV+l2UpdMuonMuTrackV+l3TkMuonMuTrackV+l3MuonMuTrackV
+    l2SeedMuTrackV+l2MuonMuTrackV+l2UpdMuonMuTrackV+l3TkMuonMuTrackV+l3MuonMuTrackV
     )
 
 
