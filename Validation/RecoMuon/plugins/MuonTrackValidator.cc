@@ -178,13 +178,13 @@ void MuonTrackValidator::beginRun(Run const&, EventSetup const& setup) {
 
       //pulls of track params vs eta: to be used with fitslicesytool
       dxypull_vs_eta.push_back(dbe_->book2D("dxypull_vs_eta","dxypull_vs_eta",nint,min,max,100,-10,10));
-      ptpull_vs_eta.push_back(dbe_->book2D("ptpull_vs_eta","ptpull_vs_eta",nint,min,max,100,-10,10)); 
+      ptpull_vs_eta.push_back(dbe_->book2D("ptpull_vs_eta","ptpull_vs_eta",nint,min,max,100,-150,150)); 
       dzpull_vs_eta.push_back(dbe_->book2D("dzpull_vs_eta","dzpull_vs_eta",nint,min,max,100,-10,10)); 
       phipull_vs_eta.push_back(dbe_->book2D("phipull_vs_eta","phipull_vs_eta",nint,min,max,100,-10,10)); 
       thetapull_vs_eta.push_back(dbe_->book2D("thetapull_vs_eta","thetapull_vs_eta",nint,min,max,100,-10,10));
 
       //pulls of track params vs phi
-      ptpull_vs_phi.push_back(dbe_->book2D("ptpull_vs_phi","p_{t} pull vs #phi",nintPhi,minPhi,maxPhi,100,-10,10)); 
+      ptpull_vs_phi.push_back(dbe_->book2D("ptpull_vs_phi","p_{t} pull vs #phi",nintPhi,minPhi,maxPhi,100,-150,150)); 
       phipull_vs_phi.push_back(dbe_->book2D("phipull_vs_phi","#phi pull vs #phi",nintPhi,minPhi,maxPhi,100,-10,10)); 
       thetapull_vs_phi.push_back(dbe_->book2D("thetapull_vs_phi","#theta pull vs #phi",nintPhi,minPhi,maxPhi,100,-10,10));
 
@@ -804,7 +804,8 @@ void MuonTrackValidator::analyze(const edm::Event& event, const edm::EventSetup&
  	   	 
 	  //pulls of track params vs eta: fill 2D histos
 	  dxypull_vs_eta[w]->Fill(getEta(track->eta()),dxyPull);
-	  ptpull_vs_eta[w]->Fill(getEta(track->eta()),ptres/ptError);
+	  if ((1.*ptres/ptError)>150) ptpull_vs_eta[w]->Fill(getEta(track->eta()),149);
+	  else ptpull_vs_eta[w]->Fill(getEta(track->eta()),ptres/ptError);
 	  dzpull_vs_eta[w]->Fill(getEta(track->eta()),dzPull);
 	  phipull_vs_eta[w]->Fill(getEta(track->eta()),phiPull);
 	  thetapull_vs_eta[w]->Fill(getEta(track->eta()),thetaPull);
@@ -816,7 +817,8 @@ void MuonTrackValidator::analyze(const edm::Event& event, const edm::EventSetup&
 	  phimean_vs_eta_phi[w]->Fill(phiRec,getEta(track->eta()),phiRec);
 	  ptres_vs_phi[w]->Fill(phiRec,(ptRec-ptSim)/ptRec);
 	  phires_vs_phi[w]->Fill(phiRec,phiDiff);
-	  ptpull_vs_phi[w]->Fill(phiRec,ptres/ptError);
+	  if ((1.*ptres/ptError)>150)  ptpull_vs_phi[w]->Fill(phiRec, 149);
+	  else ptpull_vs_phi[w]->Fill(phiRec,ptres/ptError);
 	  phipull_vs_phi[w]->Fill(phiRec,phiPull); 
 	  thetapull_vs_phi[w]->Fill(phiRec,thetaPull); 
 	  
