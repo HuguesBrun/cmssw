@@ -37,8 +37,9 @@ HLTHiggsSubAnalysis::HLTHiggsSubAnalysis(const edm::ParameterSet & pset,
 	_minCandidates(0),
 	_hltProcessName(pset.getParameter<std::string>("hltProcessName")),
 	_genParticleLabel(iC.consumes<reco::GenParticleCollection>(pset.getParameter<std::string>("genParticleLabel"))),
-      	_parametersEta(pset.getParameter<std::vector<double> >("parametersEta")),
+    _parametersEta(pset.getParameter<std::vector<double> >("parametersEta")),
   	_parametersPhi(pset.getParameter<std::vector<double> >("parametersPhi")),
+  	_parametersPu(pset.getParameter<std::vector<double> >("parametersPu")),
   	_parametersTurnOn(pset.getParameter<std::vector<double> >("parametersTurnOn")),
 	_trigResultsTag(iC.consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","",_hltProcessName))),
 	_recMuonSelector(0),
@@ -257,6 +258,19 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
         hSummaryPassing->Sumw2();
         _elements[nameGlobalEfficiencyPassing] = _dbe->book1D(nameGlobalEfficiencyPassing, hSummaryPassing);
         delete hSummaryPassing;
+        
+        std::string desc = "nb of interations";
+        std::string title = "nb of interations in the event";
+        std::string nameVtxPlot = "trueVtxDist_"+_analysisname+"_"+sources[i];
+        std::vector<double> params = _parametersPu;
+        int    nBins = (int)params[0];
+        double min   = params[1];
+        double max   = params[2];
+        TH1F *hPu = new TH1F(nameVtxPlot.c_str(), title.c_str(), nBins, min, max);
+        hPu->Sumw2();
+        _elements[nameVtxPlot] = _dbe->book1D(nameVtxPlot, hPu);
+        delete hPu;
+        
     }
 }
 
@@ -271,7 +285,22 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 	std::map<unsigned int,std::string> u2str;
 	u2str[GEN]="gen";
 	u2str[RECO]="rec";
+    
+    edm::Handle<std::vector< PileupSummaryInfo > > puInfo;
+    iEvent.getByLabel("addPileupInfo",puInfo);
+    int nbMCvtx = -1; // initialise the nb of vtx at -1
+    if (puInfo.isValid()) {
+        //    std::cout << "coucou on a les vtx ! " << std::endl;
+        std::vector<PileupSummaryInfo>::const_iterator PVI;
+        for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
+            if(PVI->getBunchCrossing()==0){
+                nbMCvtx = PVI->getPU_NumInteractions();
+                break;
+            }
+        }
+    }
 
+   // std::cout << "hello il y a " << nbMCvtx << " in the event" << std::endl;
 	// Extract the match structure containing the gen/reco candidates (electron, muons,...)
 	// common to all the SubAnalysis
 	//---- Generation
@@ -392,6 +421,10 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 			}				
 		}
 		delete countobjects;
+        
+        //fill the efficiency vs nb of interactions
+        std::string nameVtxPlot = "trueVtxDist_"+_analysisname+"_"+u2str[it->first];
+        _elements[nameVtxPlot]->Fill(nbMCvtx);
 	
 		// Calling to the plotters analysis (where the evaluation of the different trigger paths are done)
         std::string SummaryName = "SummaryPaths_"+_analysisname+"_"+u2str[it->first];
@@ -405,7 +438,6 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
             const std::string fillShortPath = an->gethltpath();
 			const bool ispassTrigger =  cols->triggerResults->accept(trigNames.triggerIndex(hltPath));
 			an->analyze(ispassTrigger,source,it->second);
-            std::cout << "hello in the loop !!!" << std::endl;
             hGlobalEffic->Fill(fillShortPath.c_str(),1);
             if (ispassTrigger) hGlobalEfficTrig->Fill(fillShortPath.c_str(),1);
             else hGlobalEfficTrig->Fill(fillShortPath.c_str(),0);
@@ -563,12 +595,11 @@ void HLTHiggsSubAnalysis::bookHist(const std::string & source,
 		const std::string & objType, const std::string & variable)
 {
 	std::string sourceUpper = source; 
-      	sourceUpper[0] = std::toupper(sourceUpper[0]);
+    sourceUpper[0] = std::toupper(sourceUpper[0]);
 	std::string name = source + objType + variable ;
-      	TH1F * h = 0;
+    TH1F * h = 0;
 
-      	if(variable.find("MaxPt") != std::string::npos) 
-	{
+    if(variable.find("MaxPt") != std::string::npos){
 		std::string desc = (variable == "MaxPt1") ? "Leading" : "Next-to-Leading";
 		std::string title = "pT of " + desc + " " + sourceUpper + " " + objType;
 	    	const size_t nBins = _parametersTurnOn.size() - 1;
