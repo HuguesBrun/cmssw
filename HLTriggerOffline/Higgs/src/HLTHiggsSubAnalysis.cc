@@ -123,7 +123,7 @@ HLTHiggsSubAnalysis::~HLTHiggsSubAnalysis()
 void HLTHiggsSubAnalysis::beginJob() 
 {
 }
-
+ 
 
 
 void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup & iSetup)
@@ -223,14 +223,15 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
 	}
 
 	// Book the gen/reco analysis-dependent histograms (denominators)
+    std::vector<std::string> sources(2);
+    sources[0] = "gen";
+    sources[1] = "rec";
+    
 	for(std::map<unsigned int,std::string>::const_iterator it = _recLabels.begin();
 			it != _recLabels.end(); ++it)
 	{
 		const std::string objStr = EVTColContainer::getTypeString(it->first);
-		std::vector<std::string> sources(2);
-		sources[0] = "gen";
-		sources[1] = "rec";
-	  
+
 		for(size_t i = 0; i < sources.size(); i++) 
 		{
 			std::string source = sources[i];
@@ -240,6 +241,23 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
 			bookHist(source, objStr, "MaxPt2");
 		}
 	}
+    
+    //booking the histograms for overall trigger efficiencies
+    for(size_t i = 0; i < sources.size(); i++)
+    {
+        std::string nameGlobalEfficiency = "SummaryPaths_"+_analysisname+"_"+sources[i];
+        
+        TH1F *hSummary = new TH1F(nameGlobalEfficiency.c_str(),nameGlobalEfficiency.c_str(),_hltPathsToCheck.size(), 0, _hltPathsToCheck.size());
+        hSummary->Sumw2();
+        _elements[nameGlobalEfficiency] = _dbe->book1D(nameGlobalEfficiency, hSummary);
+        delete hSummary;
+        
+        std::string nameGlobalEfficiencyPassing= nameGlobalEfficiency+"_passingHLT";
+        TH1F *hSummaryPassing = new TH1F(nameGlobalEfficiencyPassing.c_str(),nameGlobalEfficiencyPassing.c_str(),_hltPathsToCheck.size(), 0, _hltPathsToCheck.size());
+        hSummaryPassing->Sumw2();
+        _elements[nameGlobalEfficiencyPassing] = _dbe->book1D(nameGlobalEfficiencyPassing, hSummaryPassing);
+        delete hSummaryPassing;
+    }
 }
 
 
@@ -376,18 +394,26 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 		delete countobjects;
 	
 		// Calling to the plotters analysis (where the evaluation of the different trigger paths are done)
+        std::string SummaryName = "SummaryPaths_"+_analysisname+"_"+u2str[it->first];
 		const std::string source = u2str[it->first];
+        TH1F* hGlobalEffic = _elements[SummaryName]->getTH1F();
+        TH1F* hGlobalEfficTrig = _elements[SummaryName+"_passingHLT"]->getTH1F();
 		for(std::vector<HLTHiggsPlotter>::iterator an = _analyzers.begin();
 				an != _analyzers.end(); ++an)
 		{
 			const std::string hltPath = _shortpath2long[an->gethltpath()];
+            const std::string fillShortPath = an->gethltpath();
 			const bool ispassTrigger =  cols->triggerResults->accept(trigNames.triggerIndex(hltPath));
 			an->analyze(ispassTrigger,source,it->second);
+            std::cout << "hello in the loop !!!" << std::endl;
+            hGlobalEffic->Fill(fillShortPath.c_str(),1);
+            if (ispassTrigger) hGlobalEfficTrig->Fill(fillShortPath.c_str(),1);
+            else hGlobalEfficTrig->Fill(fillShortPath.c_str(),0);
 		}
 	}
 }
 
-// Return the objects (muons,electrons,photons,...) needed by a hlt path. 
+// Return the objects (muons,electrons,photons,...) needed by a hlt path.
 const std::vector<unsigned int> HLTHiggsSubAnalysis::getObjectsType(const std::string & hltPath) const
 {
 	static const unsigned int objSize = 5; //6;
