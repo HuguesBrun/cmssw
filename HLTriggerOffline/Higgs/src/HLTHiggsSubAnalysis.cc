@@ -269,8 +269,16 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
         TH1F *hPu = new TH1F(nameVtxPlot.c_str(), title.c_str(), nBins, min, max);
         hPu->Sumw2();
         _elements[nameVtxPlot] = _dbe->book1D(nameVtxPlot, hPu);
+        for (size_t j = 0 ; j < _hltPathsToCheck.size() ; j++){
+                std::string path = _hltPathsToCheck[j];
+                std::string shortpath = path;
+                if(path.rfind("_v") < path.length())
+                {
+                        shortpath = path.substr(0, path.rfind("_v"));
+                }    
+        	_elements[nameVtxPlot+"_"+shortpath] = _dbe->book1D(nameVtxPlot+"_"+shortpath, hPu);
+        }
         delete hPu;
-        
     }
 }
 
@@ -435,12 +443,17 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 				an != _analyzers.end(); ++an)
 		{
 			const std::string hltPath = _shortpath2long[an->gethltpath()];
-            const std::string fillShortPath = an->gethltpath();
+            		const std::string fillShortPath = an->gethltpath();
 			const bool ispassTrigger =  cols->triggerResults->accept(trigNames.triggerIndex(hltPath));
 			an->analyze(ispassTrigger,source,it->second);
-            hGlobalEffic->Fill(fillShortPath.c_str(),1);
-            if (ispassTrigger) hGlobalEfficTrig->Fill(fillShortPath.c_str(),1);
-            else hGlobalEfficTrig->Fill(fillShortPath.c_str(),0);
+            		hGlobalEffic->Fill(fillShortPath.c_str(),1);
+           		if (ispassTrigger) {
+				hGlobalEfficTrig->Fill(fillShortPath.c_str(),1);
+				_elements[nameVtxPlot+"_"+fillShortPath.c_str()]->Fill(nbMCvtx);
+			}
+            		else { 
+				hGlobalEfficTrig->Fill(fillShortPath.c_str(),0);
+			}
 		}
 	}
 }

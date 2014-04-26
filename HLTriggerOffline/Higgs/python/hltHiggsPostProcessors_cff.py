@@ -80,6 +80,12 @@ for type in plot_types:
 	for trig in triggers:
 	    efficiency_strings.append(efficiency_string(obj,type,trig))
 
+
+#add the summary plots
+for an in _config.analysis:
+    for trig in triggers:
+        efficiency_strings.append("Eff_trueVtxDist_"+an+"_gen_"+trig+" ' Efficiency vs nb of interactions; nb of interactions ; nb events passing each path ' trueVtxDist_"+an+"_gen_"+trig+" trueVtxDist_"+an+"_gen")
+
 add_reco_strings(efficiency_strings)
 
 
