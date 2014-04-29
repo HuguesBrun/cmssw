@@ -20,6 +20,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
@@ -112,12 +113,14 @@ class HLTHiggsSubAnalysis
 		edm::EDGetTokenT<reco::PhotonCollection> _recLabelsPhoton;
 		edm::EDGetTokenT<reco::CaloMETCollection> _recLabelsCaloMET;
 		edm::EDGetTokenT<reco::PFTauCollection> _recLabelsPFTau;
+		edm::EDGetTokenT<std::vector< PileupSummaryInfo > > _puSummaryInfo;
 
 		
 		//! Some kinematical parameters
-	      	std::vector<double> _parametersEta;
-	      	std::vector<double> _parametersPhi;
-	      	std::vector<double> _parametersTurnOn;
+        std::vector<double> _parametersEta;
+        std::vector<double> _parametersPhi;
+        std::vector<double> _parametersPu;
+        std::vector<double> _parametersTurnOn;
 		edm::EDGetTokenT<edm::TriggerResults> _trigResultsTag;
 
 		
