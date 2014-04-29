@@ -65,8 +65,9 @@ class HLTHiggsSubAnalysis
 				    edm::ConsumesCollector&& iC);
 		~HLTHiggsSubAnalysis();
 	      	void beginJob();
-	      	void beginRun(const edm::Run & iRun, const edm::EventSetup & iEventSetup);
+            void beginRun(const edm::Run & iRun, const edm::EventSetup & iEventSetup);
 	      	void analyze(const edm::Event & iEvent, const edm::EventSetup & iEventSetup, EVTColContainer * cols);
+            void bookHistograms(DQMStore::IBooker &);
 
 		//! Extract what objects need this analysis
 		const std::vector<unsigned int> getObjectsType(const std::string & hltpath) const;
@@ -80,7 +81,7 @@ class HLTHiggsSubAnalysis
 				std::vector<MatchStruct> * matches);
 
 		void bookHist(const std::string & source, const std::string & objType,
-			       	const std::string & variable);
+			       	const std::string & variable, DQMStore::IBooker &);
 		void fillHist(const std::string & source,const std::string & objType, 
 				const std::string & variable, const float & value );
 
@@ -144,8 +145,7 @@ class HLTHiggsSubAnalysis
 		
 		HLTConfigProvider _hltConfig;
 		
-	      	DQMStore* _dbe;
-	      	std::map<std::string, MonitorElement *> _elements;		
+	      	std::map<std::string, MonitorElement *> _elements;
 };
 
 

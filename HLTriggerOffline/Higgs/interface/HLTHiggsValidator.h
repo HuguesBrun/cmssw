@@ -14,7 +14,7 @@
 //#include "FWCore/PluginManager/interface/ModuleDef.h"
 //#include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "DQMServices/Core/interface/DQMEDAnalyzer.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -29,7 +29,7 @@
 
 class EVTColContainer;
 
-class HLTHiggsValidator : public edm::EDAnalyzer 
+class HLTHiggsValidator : public DQMEDAnalyzer
 {
 	public:
 		//! Constructor
@@ -38,9 +38,10 @@ class HLTHiggsValidator : public edm::EDAnalyzer
 
 	private:
 		// concrete analyzer methods
-	      	virtual void beginJob();
-	      	virtual void beginRun(const edm::Run &iRun, const edm::EventSetup & iSetup);
-	      	virtual void analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup);
+        virtual void beginJob();
+        void bookHistograms(DQMStore::IBooker &);
+	    void dqmBeginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) ;
+  	    virtual void analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup);
 		virtual void endRun(const edm::Run & iRun, const edm::EventSetup & iSetup);
 		virtual void endJob();
 

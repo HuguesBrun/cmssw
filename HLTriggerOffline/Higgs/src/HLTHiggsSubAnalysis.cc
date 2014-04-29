@@ -46,8 +46,7 @@ HLTHiggsSubAnalysis::HLTHiggsSubAnalysis(const edm::ParameterSet & pset,
 	_recCaloMETSelector(0),
 	_recPFTauSelector(0),
 	_recPhotonSelector(0),
-	_recTrackSelector(0),
-	_dbe(0)
+	_recTrackSelector(0)
 {
 	// Specific parameters for this analysis
 	edm::ParameterSet anpset = pset.getParameter<edm::ParameterSet>(analysisname);
@@ -93,8 +92,6 @@ HLTHiggsSubAnalysis::HLTHiggsSubAnalysis(const edm::ParameterSet & pset,
 	_hltPathsToCheck = anpset.getParameter<std::vector<std::string> >("hltPathsToCheck");
 	_minCandidates = anpset.getParameter<unsigned int>("minCandidates");
 
-	_dbe = edm::Service<DQMStore>().operator->();
-      	_dbe->setVerbose(0);
 }
 
 HLTHiggsSubAnalysis::~HLTHiggsSubAnalysis()
@@ -128,8 +125,7 @@ void HLTHiggsSubAnalysis::beginJob()
 
 void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup & iSetup)
 {
-	std::string baseDir = "HLT/Higgs/"+_analysisname+"/";
-      	_dbe->setCurrentFolder(baseDir);
+
 
 	// Initialize the confighlt
 	bool changedConfig;
@@ -211,17 +207,16 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
 		
 		// the hlt path, the objects (elec,muons,photons,...)
 		// needed to evaluate the path are the argumens of the plotter
-		HLTHiggsPlotter analyzer(_pset, shortpath,objsNeedHLT, _dbe);
+		HLTHiggsPlotter analyzer(_pset, shortpath,objsNeedHLT);
 		_analyzers.push_back(analyzer);
     	}
 
-      	// Call the beginRun (which books all the path dependent histograms)
-      	for(std::vector<HLTHiggsPlotter>::iterator it = _analyzers.begin(); 
-			it != _analyzers.end(); ++it) 
-	{
-	    	it->beginRun(iRun, iSetup);
-	}
+}
 
+void HLTHiggsSubAnalysis::bookHistograms(DQMStore::IBooker &ibooker)
+{
+    std::string baseDir = "HLT/Higgs/"+_analysisname+"/";
+    ibooker.setCurrentFolder(baseDir);
 	// Book the gen/reco analysis-dependent histograms (denominators)
 	for(std::map<unsigned int,std::string>::const_iterator it = _recLabels.begin();
 			it != _recLabels.end(); ++it)
@@ -234,11 +229,18 @@ void HLTHiggsSubAnalysis::beginRun(const edm::Run & iRun, const edm::EventSetup 
 		for(size_t i = 0; i < sources.size(); i++) 
 		{
 			std::string source = sources[i];
-			bookHist(source, objStr, "Eta");
-			bookHist(source, objStr, "Phi");
-			bookHist(source, objStr, "MaxPt1");
-			bookHist(source, objStr, "MaxPt2");
+			bookHist(source, objStr, "Eta", ibooker);
+			bookHist(source, objStr, "Phi", ibooker);
+			bookHist(source, objStr, "MaxPt1", ibooker);
+			bookHist(source, objStr, "MaxPt2", ibooker);
 		}
+	}
+    
+    // Call the bookHistograms (which books all the path dependent histograms)
+    for(std::vector<HLTHiggsPlotter>::iterator it = _analyzers.begin();
+        it != _analyzers.end(); ++it)
+	{
+        it->bookHistograms(ibooker);
 	}
 }
 
@@ -534,7 +536,7 @@ void HLTHiggsSubAnalysis::initobjects(const edm::Event & iEvent, EVTColContainer
 }
 
 void HLTHiggsSubAnalysis::bookHist(const std::string & source, 
-		const std::string & objType, const std::string & variable)
+		const std::string & objType, const std::string & variable, DQMStore::IBooker &ibooker)
 {
 	std::string sourceUpper = source; 
       	sourceUpper[0] = std::toupper(sourceUpper[0]);
@@ -566,7 +568,7 @@ void HLTHiggsSubAnalysis::bookHist(const std::string & source,
 	    	h = new TH1F(name.c_str(), title.c_str(), nBins, min, max);
       	}
       	h->Sumw2();
-      	_elements[name] = _dbe->book1D(name, h);
+      	_elements[name] = ibooker.book1D(name, h);
       	delete h;
 }
 
