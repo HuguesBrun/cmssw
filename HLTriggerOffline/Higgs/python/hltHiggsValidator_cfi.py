@@ -9,6 +9,9 @@ hltHiggsValidator = cms.EDAnalyzer("HLTHiggsValidator",
     # -- The instance name of the reco::GenParticles collection
     genParticleLabel = cms.string("genParticles"),
 
+    # -- The nomber of interactions in the event
+    pileUpInfoLabel  = cms.string("addPileupInfo"),
+
     # -- The binning of the Pt efficiency plots
     parametersTurnOn = cms.vdouble(0,
                                    1, 8, 9, 10,

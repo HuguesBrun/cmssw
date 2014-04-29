@@ -93,6 +93,12 @@ HLTHiggsSubAnalysis::HLTHiggsSubAnalysis(const edm::ParameterSet & pset,
 	
 	_hltPathsToCheck = anpset.getParameter<std::vector<std::string> >("hltPathsToCheck");
 	_minCandidates = anpset.getParameter<unsigned int>("minCandidates");
+    
+    if( pset.exists("pileUpInfoLabel") )
+	{
+        std::cout << "booking the token now " << std::endl;
+        _puSummaryInfo = iC.consumes<std::vector< PileupSummaryInfo > >(pset.getParameter<std::string>("pileUpInfoLabel"));
+	}
 
 	_dbe = edm::Service<DQMStore>().operator->();
       	_dbe->setVerbose(0);
@@ -295,7 +301,7 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 	u2str[RECO]="rec";
     
     edm::Handle<std::vector< PileupSummaryInfo > > puInfo;
-    iEvent.getByLabel("addPileupInfo",puInfo);
+    iEvent.getByToken(_puSummaryInfo,puInfo);
     int nbMCvtx = -1; // initialise the nb of vtx at -1
     if (puInfo.isValid()) {
         //    std::cout << "coucou on a les vtx ! " << std::endl;
@@ -491,6 +497,7 @@ const std::vector<unsigned int> HLTHiggsSubAnalysis::getObjectsType(const std::s
 // Booking the maps: recLabels and genParticle selectors
 void HLTHiggsSubAnalysis::bookobjects( const edm::ParameterSet & anpset, edm::ConsumesCollector& iC )
 {
+    std::cout << "hello, will book the objects" << std::endl;
 	if( anpset.exists("recMuonLabel") )
 	{
 	        _recLabels[EVTColContainer::MUON] = anpset.getParameter<std::string>("recMuonLabel");
@@ -527,6 +534,7 @@ void HLTHiggsSubAnalysis::bookobjects( const edm::ParameterSet & anpset, edm::Co
 		_genSelectorMap[EVTColContainer::TRACK] = 0 ;
 	}*/
 
+    
 	if( _recLabels.size() < 1 )
 	{
 		edm::LogError("HiggsValidation") << "HLTHiggsSubAnalysis::bookobjects, " 

@@ -112,6 +112,7 @@ class HLTHiggsSubAnalysis
 		edm::EDGetTokenT<reco::PhotonCollection> _recLabelsPhoton;
 		edm::EDGetTokenT<reco::CaloMETCollection> _recLabelsCaloMET;
 		edm::EDGetTokenT<reco::PFTauCollection> _recLabelsPFTau;
+		edm::EDGetTokenT<std::vector< PileupSummaryInfo > > _puSummaryInfo;
 
 		
 		//! Some kinematical parameters
