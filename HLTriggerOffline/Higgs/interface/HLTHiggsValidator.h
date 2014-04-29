@@ -38,12 +38,10 @@ class HLTHiggsValidator : public DQMEDAnalyzer
 
 	private:
 		// concrete analyzer methods
-        virtual void beginJob();
-        void bookHistograms(DQMStore::IBooker &);
-	    void dqmBeginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) ;
-  	    virtual void analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup);
-		virtual void endRun(const edm::Run & iRun, const edm::EventSetup & iSetup);
-		virtual void endJob();
+        virtual void bookHistograms(DQMStore::IBooker &, const edm::Run &, const edm::EventSetup &) override;
+        virtual void dqmBeginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) override;
+  	    virtual void analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) override;
+		virtual void endRun(const edm::Run & iRun, const edm::EventSetup & iSetup) override;
 
 		//! Input from configuration file
 		edm::ParameterSet _pset;

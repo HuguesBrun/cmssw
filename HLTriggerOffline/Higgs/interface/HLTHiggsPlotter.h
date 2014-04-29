@@ -58,7 +58,7 @@ class HLTHiggsPlotter
 		inline const std::string gethltpath() const { return _hltPath; }
 		
        	private:
-	      	void bookHist(const std::string & source, const std::string & objType, const std::string & variable);
+	      	void bookHist(const std::string & source, const std::string & objType, const std::string & variable,  DQMStore::IBooker &);
 	      	void fillHist(const bool & passTrigger, const std::string & source, 
                           const std::string & objType, const std::string & var,
                           const float & value);

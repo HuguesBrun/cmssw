@@ -180,7 +180,7 @@ void HLTHiggsPlotter::bookHist(const std::string & source,
     h = new TH1F(name.c_str(), title.c_str(), nBins, min, max);
   }
   h->Sumw2();
-  _elements[name] = _ibooker.book1D(name, h);
+  _elements[name] = ibooker.book1D(name.c_str(), h);
   delete h;
 }
 
