@@ -15,7 +15,7 @@ void HiggsHarvesting::beginJob()
     return;
 }
 
-void HiggsHarvesting::endJob()
+void HiggsHarvesting::dqmEndJob(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter)
 {
     
     dbe = 0;
@@ -29,9 +29,9 @@ void HiggsHarvesting::endJob()
         for(size_t i = 0; i < sources.size(); i++) {
             // monitoring element numerator and denominator histogram
             MonitorElement *meN =
-            dbe->get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]+"_passingHLT");
+            iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]+"_passingHLT");
             MonitorElement *meD =
-            dbe->get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]);
+            iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]);
         
             if (meN && meD) {
                 // get the numerator and denominator histogram
@@ -41,12 +41,12 @@ void HiggsHarvesting::endJob()
                 //denominator->Sumw2();
             
                 // set the current directory
-                dbe->setCurrentFolder("HLT/Higgs/"+analysisName);
+                iBooker.setCurrentFolder("HLT/Higgs/"+analysisName);
             
                 // booked the new histogram to contain the results
                 TString nameEffHisto = "efficiencySummary_"+sources[i];
                 TH1F *efficiencySummary = (TH1F*) numerator->Clone(nameEffHisto);
-                MonitorElement *me = dbe->book1D(nameEffHisto, efficiencySummary );
+                MonitorElement *me = iBooker.book1D(nameEffHisto, efficiencySummary );
             
                 // Calculate the efficiency
                 me->getTH1F()->Divide(numerator, denominator, 1., 1., "B");
@@ -74,11 +74,7 @@ void HiggsHarvesting::endRun(const edm::Run& iRun,
     return;
 }
 
-void HiggsHarvesting::analyze(const edm::Event& iEvent, 
-                                 const edm::EventSetup& iSetup)
-{
-    return;
-}
+
 
 
 DEFINE_FWK_MODULE(HiggsHarvesting);

@@ -22,6 +22,7 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+#include "DQMServices/Core/interface/DQMEDHarvester.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -31,7 +32,7 @@
 
 #include "TString.h"
 
-class HiggsHarvesting : public edm::EDAnalyzer
+class HiggsHarvesting : public DQMEDHarvester
 {
   
  public:
@@ -39,8 +40,7 @@ class HiggsHarvesting : public edm::EDAnalyzer
   explicit HiggsHarvesting(const edm::ParameterSet&);
   virtual ~HiggsHarvesting();
   virtual void beginJob();
-  virtual void endJob();  
-  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  virtual void dqmEndJob(DQMStore::IBooker &, DQMStore::IGetter &) override;
   virtual void beginRun(const edm::Run&, const edm::EventSetup&);
   virtual void endRun(const edm::Run&, const edm::EventSetup&);
 
