@@ -95,7 +95,6 @@ HLTHiggsSubAnalysis::HLTHiggsSubAnalysis(const edm::ParameterSet & pset,
     
     if( pset.exists("pileUpInfoLabel") )
 	{
-        std::cout << "booking the token now " << std::endl;
         _puSummaryInfo = iC.consumes<std::vector< PileupSummaryInfo > >(pset.getParameter<std::string>("pileUpInfoLabel"));
 	}
 
@@ -498,7 +497,6 @@ const std::vector<unsigned int> HLTHiggsSubAnalysis::getObjectsType(const std::s
 // Booking the maps: recLabels and genParticle selectors
 void HLTHiggsSubAnalysis::bookobjects( const edm::ParameterSet & anpset, edm::ConsumesCollector& iC )
 {
-    std::cout << "hello, will book the objects" << std::endl;
 	if( anpset.exists("recMuonLabel") )
 	{
 	        _recLabels[EVTColContainer::MUON] = anpset.getParameter<std::string>("recMuonLabel");
