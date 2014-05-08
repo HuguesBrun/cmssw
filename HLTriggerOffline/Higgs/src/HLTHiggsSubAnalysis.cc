@@ -265,7 +265,6 @@ void HLTHiggsSubAnalysis::bookHistograms(DQMStore::IBooker &ibooker)
         _elements[nameGlobalEfficiencyPassing] = ibooker.book1D(nameGlobalEfficiencyPassing, hSummaryPassing);
         delete hSummaryPassing;
         
-        std::string desc = "nb of interations";
         std::string title = "nb of interations in the event";
         std::string nameVtxPlot = "trueVtxDist_"+_analysisname+"_"+sources[i];
         std::vector<double> params = _parametersPu;
@@ -281,7 +280,9 @@ void HLTHiggsSubAnalysis::bookHistograms(DQMStore::IBooker &ibooker)
                 if(path.rfind("_v") < path.length())
                 {
                         shortpath = path.substr(0, path.rfind("_v"));
-                }    
+                }
+            std::string titlePassing = "nb of interations in the event passing path " + shortpath;
+            hPu->SetTitle(titlePassing.c_str());
         	_elements[nameVtxPlot+"_"+shortpath] = ibooker.book1D(nameVtxPlot+"_"+shortpath, hPu);
         }
         delete hPu;
@@ -302,9 +303,8 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
     
     edm::Handle<std::vector< PileupSummaryInfo > > puInfo;
     iEvent.getByToken(_puSummaryInfo,puInfo);
-    int nbMCvtx = -1; // initialise the nb of vtx at -1
+    int nbMCvtx = -1;
     if (puInfo.isValid()) {
-        //    std::cout << "coucou on a les vtx ! " << std::endl;
         std::vector<PileupSummaryInfo>::const_iterator PVI;
         for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
             if(PVI->getBunchCrossing()==0){
@@ -314,7 +314,6 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
         }
     }
 
-   // std::cout << "hello il y a " << nbMCvtx << " in the event" << std::endl;
 	// Extract the match structure containing the gen/reco candidates (electron, muons,...)
 	// common to all the SubAnalysis
 	//---- Generation
@@ -436,6 +435,7 @@ void HLTHiggsSubAnalysis::analyze(const edm::Event & iEvent, const edm::EventSet
 		}
 		delete countobjects;
         
+        if (puInfo)
         //fill the efficiency vs nb of interactions
         std::string nameVtxPlot = "trueVtxDist_"+_analysisname+"_"+u2str[it->first];
         _elements[nameVtxPlot]->Fill(nbMCvtx);

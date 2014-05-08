@@ -17,46 +17,40 @@ void HiggsHarvesting::beginJob()
 
 void HiggsHarvesting::dqmEndJob(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter)
 {
-    
-    dbe = 0;
-    dbe = edm::Service<DQMStore>().operator->();
+
     
     //define type of sources :
     std::vector<std::string> sources(2);
     sources[0] = "gen";
     sources[1] = "rec";
-    if (dbe) {
-        for(size_t i = 0; i < sources.size(); i++) {
-            // monitoring element numerator and denominator histogram
-            MonitorElement *meN =
-            iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]+"_passingHLT");
-            MonitorElement *meD =
-            iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]);
+    for(size_t i = 0; i < sources.size(); i++) {
+        // monitoring element numerator and denominator histogram
+        MonitorElement *meN =
+        iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]+"_passingHLT");
+        MonitorElement *meD =
+        iGetter.get("HLT/Higgs/"+analysisName+"/SummaryPaths_"+analysisName+"_"+sources[i]);
         
-            if (meN && meD) {
-                // get the numerator and denominator histogram
-                TH1F *numerator = meN->getTH1F();
-                // numerator->Sumw2();
-                TH1F *denominator = meD->getTH1F();
-                //denominator->Sumw2();
+        if (meN && meD) {
+            // get the numerator and denominator histogram
+            TH1F *numerator = meN->getTH1F();
+            TH1F *denominator = meD->getTH1F();
             
-                // set the current directory
-                iBooker.setCurrentFolder("HLT/Higgs/"+analysisName);
+            // set the current directory
+            iBooker.setCurrentFolder("HLT/Higgs/"+analysisName);
             
-                // booked the new histogram to contain the results
-                TString nameEffHisto = "efficiencySummary_"+sources[i];
-                TH1F *efficiencySummary = (TH1F*) numerator->Clone(nameEffHisto);
-                MonitorElement *me = iBooker.book1D(nameEffHisto, efficiencySummary );
+            // booked the new histogram to contain the results
+            TString nameEffHisto = "efficiencySummary_"+sources[i];
+            TH1F *efficiencySummary = (TH1F*) numerator->Clone(nameEffHisto);
+            std::string histoTitle = "efficiency of paths used in " + analysisName;
+            efficiencySummary->SetTitle(histoTitle.c_str());
+            MonitorElement *me = iBooker.book1D(nameEffHisto, efficiencySummary );
             
                 // Calculate the efficiency
-                me->getTH1F()->Divide(numerator, denominator, 1., 1., "B");
+            me->getTH1F()->Divide(numerator, denominator, 1., 1., "B");
         
         } else {
             std::cout << "Monitor elements don't exist" << std::endl;
         }
-        }
-    } else {
-        std::cout << "Don't have a valid DQM back end" << std::endl;
     }
     
     return;
@@ -74,7 +68,3 @@ void HiggsHarvesting::endRun(const edm::Run& iRun,
     return;
 }
 
-
-
-
-DEFINE_FWK_MODULE(HiggsHarvesting);
