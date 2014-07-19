@@ -50,6 +50,9 @@ private:
   void markAsUsed(int nr, const MuonRecHitContainer &recHits, bool* used) const;
   std::vector<double> theCrackEtas;
   double theCrackWindow;
+  double theDeltaPhiWindow;
+  double theDeltaEtaWindow;
+  double theDeltaCrackWindow;
 };
 
 #endif
