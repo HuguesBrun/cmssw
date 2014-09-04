@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-mvaTrigV0CSA14_50ns = cms.EDFilter("ElectronIdMVAProducerCSA14",
+mvaTrigV050nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
                          verbose = cms.untracked.bool(False),
                          vertexTag = cms.InputTag('offlinePrimaryVertices'),
                          electronTag = cms.InputTag('gedGsfElectrons'),
@@ -14,7 +14,7 @@ mvaTrigV0CSA14_50ns = cms.EDFilter("ElectronIdMVAProducerCSA14",
                          Trig = cms.bool(True),
 )
 
-mvaTrigV0CSA14_25ns = cms.EDFilter("ElectronIdMVAProducerCSA14",
+mvaTrigV025nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
                                    verbose = cms.untracked.bool(False),
                                    vertexTag = cms.InputTag('offlinePrimaryVertices'),
                                    electronTag = cms.InputTag('gedGsfElectrons'),
