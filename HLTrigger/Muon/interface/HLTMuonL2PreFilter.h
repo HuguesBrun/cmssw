@@ -45,6 +45,10 @@ class HLTMuonL2PreFilter : public HLTFilter {
     edm::InputTag             seedMapTag_;
     edm::EDGetTokenT<SeedMap> seedMapToken_;
 
+    /// match the L2 muon with a L1 muon seed 
+    bool matchWithL1_;
+
+
     /// minimum number of muons to fire the trigger
     int minN_;
 

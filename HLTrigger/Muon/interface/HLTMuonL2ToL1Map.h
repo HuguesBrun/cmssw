@@ -29,7 +29,7 @@ class HLTMuonL2ToL1Map{
       // get hold of muons that fired the previous level
       edm::Handle<trigger::TriggerFilterObjectWithRefs> previousLevelCands;
       iEvent.getByToken(previousCandToken, previousLevelCands);
-      previousLevelCands->getObjects(trigger::TriggerL1Mu, firedL1Muons_);
+      if (previousLevelCands.isValid()) previousLevelCands->getObjects(trigger::TriggerL1Mu, firedL1Muons_);
 
       // get hold of the seed map
       iEvent.getByToken(seedMapToken, seedMapHandle_);

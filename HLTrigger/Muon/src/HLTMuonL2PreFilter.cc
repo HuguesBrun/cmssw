@@ -49,6 +49,9 @@ HLTMuonL2PreFilter::HLTMuonL2PreFilter(const edm::ParameterSet& iConfig): HLTFil
 {
   using namespace std;
 
+  // check if the previousCandTag is empty, then will not try to match L2 candidates with L1
+  matchWithL1_ = (previousCandTag_.label()!="");
+  
   // check that number of eta bins matches number of nStation cuts
   if( minNstations_.size()!=absetaBins_.size() ||
       minNhits_.size()!=absetaBins_.size()     ||
@@ -171,8 +174,10 @@ bool HLTMuonL2PreFilter::hltFilter(edm::Event& iEvent, const edm::EventSetup& iS
   for(RecoChargedCandidateCollection::const_iterator cand=allMuons->begin(); cand!=allMuons->end(); cand++){
     TrackRef mu = cand->get<TrackRef>();
 
-    // check if this muon passed previous level
-    if(!mapL2ToL1.isTriggeredByL1(mu)) continue;
+    if (matchWithL1_){ 
+    	// check if this muon passed previous level
+    	if(!mapL2ToL1.isTriggeredByL1(mu)) continue;
+    }
 
     // eta cut
     if(std::abs(mu->eta()) > maxEta_) continue;
