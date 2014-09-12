@@ -116,5 +116,12 @@ egmGsfElectronIDs.electronIDs.append(
               idMD5 = cms.string(csa14_PU20bx25_tight_md5_v0) )
     )
 
+from EgammaAnalysis.ElectronTools.Identification.cutBasedElectronTrigID_CSA14_V0_cff \
+import cutBasedElectronTrigIDCSA14V0
+csa142012likeTrigeringSelectionv0 = central_id_registry.getMD5FromName(cutBasedElectronTrigIDCSA14V0.idName)
+egmGsfElectronIDs.electronIDs.append(
+                                     cms.PSet( idDefinition = cutBasedElectronTrigIDCSA14V0,
+                                              idMD5 = cms.string(csa142012likeTrigeringSelectionv0) )
+                                     )
 
 egmGsfElectronIDSequence = cms.Sequence(electronIDValueMapProducer * egmGsfElectronIDs)
