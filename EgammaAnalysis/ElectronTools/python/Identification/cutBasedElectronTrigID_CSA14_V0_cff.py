@@ -64,8 +64,15 @@ cutBasedElectronTrigIDCSA14V0 = cms.PSet(
                   barrelCutOff = cms.double(ebCutOff),
                   needsAdditionalProducts = cms.bool(True),
                   isIgnored = cms.bool(False)),
+        cms.PSet( cutName = cms.string('GsfEleMVATrigCut'),
+                  mvaTrigValueCutValueEB = cms.double(0.1),
+                  mvaTrigValueCutValueEE = cms.double(0.1),
+                  mvaTrigValueMap = cms.InputTag('mvaTrigV050nsCSA14'),
+                  barrelCutOff = cms.double(ebCutOff),
+                  needsAdditionalProducts = cms.bool(True),
+                  isIgnored = cms.bool(False)),
     )
 )
 
 central_id_registry.register(cutBasedElectronTrigIDCSA14V0.idName,
-                            '13a18621e98e770366829759499f949c')
+                            'e657f8fba8f1ba669149bdce6fb0ada9')

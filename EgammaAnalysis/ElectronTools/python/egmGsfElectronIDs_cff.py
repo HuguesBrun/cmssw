@@ -2,6 +2,9 @@
 from EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cfi import *
 from PhysicsTools.SelectorUtils.centralIDRegistry import central_id_registry
 
+#load the electronMVA producer
+from EgammaAnalysis.ElectronTools.electronIdMVAProducer_CSA14_cfi import *
+
 # Load the producer module to build full 5x5 cluster shapes and whatever 
 # else is needed for IDs
 from EgammaAnalysis.ElectronTools.ElectronIDValueMapProducer_cfi import *
@@ -124,4 +127,4 @@ egmGsfElectronIDs.electronIDs.append(
                                               idMD5 = cms.string(csa142012likeTrigeringSelectionv0) )
                                      )
 
-egmGsfElectronIDSequence = cms.Sequence(electronIDValueMapProducer * egmGsfElectronIDs)
+egmGsfElectronIDSequence = cms.Sequence(electronIDValueMapProducer * mvaTrigV050nsCSA14 * egmGsfElectronIDs)
