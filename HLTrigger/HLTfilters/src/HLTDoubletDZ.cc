@@ -228,9 +228,59 @@ HLTDoubletDZ<reco::RecoEcalCandidate, reco::RecoEcalCandidate>::hltFilter(edm::E
   return accept;
 }
 
-typedef HLTDoubletDZ<reco::Electron            , reco::Electron>             HLT2ElectronElectronDZ;
+
+template<>
+bool
+HLTDoubletDZ<reco::RecoEcalCandidate, reco::RecoChargedCandidate>::hltFilter(edm::Event& iEvent, const edm::EventSetup& iSetup, trigger::TriggerFilterObjectWithRefs & filterproduct) const
+{
+ 
+  edm::Handle<reco::ElectronCollection> electronHandle_;
+  iEvent.getByToken(electronToken_, electronHandle_);
+  if (!electronHandle_.isValid()) 
+    edm::LogError("HLTDoubletDZ") << "HLTDoubletDZ: Electron Handle not valid.";
+     
+  bool accept(false);
+  
+  std::vector<T1Ref> coll1;
+  std::vector<T2Ref> coll2;
+  
+  if (getCollections(iEvent, coll1, coll2, filterproduct)) { 
+
+    int n(0);
+    reco::RecoEcalCandidateRef r1;
+    reco::RecoChargedCandidateRef r2;
+    
+    for (unsigned int i1=0; i1!=coll1.size(); i1++) {
+      r1 = coll1[i1];
+      unsigned int I(0);
+      if (same_) {I=i1+1;}
+      for (unsigned int i2=I; i2!=coll2.size(); i2++) {
+	r2=coll2[i2];
+	
+	if ( reco::deltaR(*r1, *r2) < minDR_ ) continue;
+	reco::Electron e1;
+	for(reco::ElectronCollection::const_iterator eleIt = electronHandle_->begin(); eleIt != electronHandle_->end(); eleIt++) {
+	  if (eleIt->superCluster() == r1->superCluster())
+	    e1 = *(eleIt);
+	}
+        const reco::Candidate& candidate2(*r2);	
+	if ( std::abs(e1.vz()-candidate2.vz()) > maxDZ_ ) continue;
+	
+	n++;
+	filterproduct.addObject(triggerType1_,r1);
+	filterproduct.addObject(triggerType2_,r2);
+      }
+    }
+  
+    accept = accept || (n>=min_N_);
+  }
+  
+  return accept;
+}
+
+typedef HLTDoubletDZ<reco::RecoEcalCandidate, reco::RecoEcalCandidate>             HLT2ElectronElectronDZ;
 typedef HLTDoubletDZ<reco::RecoChargedCandidate, reco::RecoChargedCandidate> HLT2MuonMuonDZ;
-typedef HLTDoubletDZ<reco::Electron            , reco::RecoChargedCandidate> HLT2ElectronMuonDZ;
+typedef HLTDoubletDZ<reco::RecoEcalCandidate            , reco::RecoChargedCandidate> HLT2ElectronMuonDZ;
 typedef HLTDoubletDZ<reco::RecoEcalCandidate   , reco::RecoEcalCandidate>    HLT2PhotonPhotonDZ;
 
 DEFINE_FWK_MODULE(HLT2ElectronElectronDZ);
