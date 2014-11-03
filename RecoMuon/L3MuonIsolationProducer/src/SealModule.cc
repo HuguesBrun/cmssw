@@ -22,3 +22,6 @@ DEFINE_FWK_MODULE(MuonHLTHcalPFClusterIsolationProducer);
 
 #include "RecoMuon/L3MuonIsolationProducer/src/MuonHLTEcalPFClusterIsolationProducer.h"
 DEFINE_FWK_MODULE(MuonHLTEcalPFClusterIsolationProducer);
+
+#include "RecoMuon/L3MuonIsolationProducer/src/L3MuonSumCaloPFIsolationProducer.h"
+DEFINE_FWK_MODULE(L3MuonSumCaloPFIsolationProducer);
