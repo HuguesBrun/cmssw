@@ -113,7 +113,7 @@ HLTMuonGenericFilter::hltFilter(edm::Event& iEvent, const edm::EventSetup& iSetu
     float vali = mapi->val;
     float energy = ref->p();
     float EtaSC = ref->eta();
-    if (useEt_) energy = ref->p();
+    if (useEt_) energy = ref->pt();
 
     if ( lessThan_ ) {
       if ( (fabs(EtaSC) < 1.479 && vali <= thrRegularEB_) || (fabs(EtaSC) >= 1.479 && vali <= thrRegularEE_) ) {
