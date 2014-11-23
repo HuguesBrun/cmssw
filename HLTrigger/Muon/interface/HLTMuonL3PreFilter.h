@@ -18,6 +18,13 @@
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
+#include "DataFormats/MuonReco/interface/MuonTrackLinks.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
+//For Debugging:
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "TH1.h"
 namespace edm {
    class ConfigurationDescriptions;
 }
@@ -50,13 +57,20 @@ class HLTMuonL3PreFilter : public HLTFilter {
       double nsigma_Pt_;        // pt uncertainty margin (in number of sigmas)
       double max_NormalizedChi2_; // cutoff in normalized chi2
       double max_DXYBeamSpot_; // cutoff in dxy from the beamspot
-      double min_DXYBeamSpot_; // minimum cut on dxy from the beamspot
+
+//      double 	min_DXYBeamSpot_;///BRS TEMP!!!!!!
+
   int min_NmuonHits_; // cutoff in minumum number of chi2 hits
   double max_PtDifference_; // cutoff in maximum different between global track and tracker track
   double min_TrackPt_; //cutoff in tracker track pt
 
   bool devDebug_;
 
+  edm::InputTag theL3LinksLabel;
+  edm::EDGetTokenT<reco::MuonTrackLinksCollection> linkToken_;
+
+
+  TH1D *hChi2;
 
 };
 
