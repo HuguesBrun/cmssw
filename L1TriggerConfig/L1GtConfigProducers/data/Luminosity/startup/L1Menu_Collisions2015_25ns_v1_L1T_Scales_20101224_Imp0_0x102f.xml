@@ -1631,7 +1631,7 @@
         1
       </ge_eq>
       <value>
-        14
+        0F
       </value>
       </et_threshold>
       <eta max="7F7F" min="0000">
@@ -1880,7 +1880,7 @@
         1
       </ge_eq>
       <value>
-        14
+        0F
       </value>
       </et_threshold>
       <eta max="7F7F" min="0000">
