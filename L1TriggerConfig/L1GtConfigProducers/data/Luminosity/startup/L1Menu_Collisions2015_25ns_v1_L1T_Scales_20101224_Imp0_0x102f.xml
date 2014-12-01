@@ -2341,7 +2341,7 @@
         <output_pin nr="14" pin="a" />
       </L1_Mu16er_TauJet20er>
       <L1_Mu20_EG10 algAlias="L1_Mu20_EG10">
-        SingleMu_0x12 AND ( SingleNoIsoEG_0x0A OR SingleIsoEG_0x0A )
+        SingleMu_0x0E AND ( SingleNoIsoEG_0x0A OR SingleIsoEG_0x0A )
         <output_pin nr="75" pin="a" />
       </L1_Mu20_EG10>
       <L1_Mu20_EG8 algAlias="L1_Mu20_EG8">
@@ -4149,7 +4149,7 @@
         1
       </ge_eq>
       <value>
-        14
+        0F
       </value>
       </et_threshold>
       <eta max="7F7F" min="0000">
@@ -5094,7 +5094,7 @@
         1
       </ge_eq>
       <value>
-        14
+        0F
       </value>
       </et_threshold>
       <eta max="7F7F" min="0000">
