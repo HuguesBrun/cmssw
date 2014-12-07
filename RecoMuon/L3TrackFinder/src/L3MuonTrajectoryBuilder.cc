@@ -45,6 +45,11 @@ L3MuonTrajectoryBuilder::~L3MuonTrajectoryBuilder() {
   if (theTrajectoryCleaner) delete theTrajectoryCleaner;
 }
 
+void L3MuonTrajectoryBuilder::fillDescriptions(edm::ParameterSetDescription& desc) {
+   edm::ParameterSetDescription descTRB;
+   MuonTrackingRegionBuilder::fillDescriptions(descTRB);
+   desc.add("MuonTrackingRegionBuilder",descTRB);
+}
 
 //
 // Get information from event

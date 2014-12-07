@@ -17,6 +17,8 @@
  *  \author A. Everett      Purdue University
  */
 
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -38,6 +40,11 @@
 #include "TrackingTools/PatternTools/interface/TSCPBuilderNoMaterial.h"
 #include "TrackingTools/PatternTools/interface/TSCBLBuilderNoMaterial.h"
 
+
+
+/*namespace edm {
+  class ConfigurationDescriptions;
+}*/
 
 class MuonServiceProxy;
 class MeasurementTrackerEvent;
@@ -65,6 +72,8 @@ class MuonTrackingRegionBuilder : public TrackingRegionProducer {
 
     /// Pass the Event to the algo at each event
     virtual void setEvent(const edm::Event&);
+
+    static void fillDescriptions(edm::ParameterSetDescription& descriptions);
 
   private:
     

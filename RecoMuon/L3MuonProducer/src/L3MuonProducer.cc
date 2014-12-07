@@ -90,7 +90,13 @@ L3MuonProducer::~L3MuonProducer() {
 
 }
 
-
+void L3MuonProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+    edm::ParameterSetDescription desc;
+    edm::ParameterSetDescription descTrajBuilder;
+    MuonTrackingRegionBuilder::fillDescriptions(descTrajBuilder);
+    desc.add("L3TrajBuilderParameters",descTrajBuilder); 
+    descriptions.add(std::string("hlt")+std::string(typeid(L3MuonProducer).name()), desc);
+}
 //
 // reconstruct muons
 //

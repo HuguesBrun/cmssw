@@ -63,7 +63,7 @@ class L3MuonTrajectoryBuilder : public GlobalTrajectoryBuilderBase {
 
     /// Pass the Event to the algo at each event
     virtual void setEvent(const edm::Event&);
-
+    static void fillDescriptions(edm::ParameterSetDescription& descriptions);
   private:
 
     /// Make a TrackCand collection using tracker Track, Trajectory information

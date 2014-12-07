@@ -23,7 +23,7 @@
 #include "DataFormats/TrackReco/interface/TrackToTrackMap.h"
 
 
-namespace edm {class ParameterSet; class Event; class EventSetup;}
+namespace edm {class ParameterSet; class Event; class EventSetup;  class ConfigurationDescriptions;}
 
 class MuonTrackFinder;
 class MuonServiceProxy;
@@ -40,7 +40,7 @@ class L3MuonProducer : public edm::EDProducer {
   
   /// reconstruct muons
   virtual void produce(edm::Event&, const edm::EventSetup&);
-
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
  private:
     

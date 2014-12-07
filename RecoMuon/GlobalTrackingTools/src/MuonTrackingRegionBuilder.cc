@@ -75,7 +75,10 @@ void MuonTrackingRegionBuilder::build(const edm::ParameterSet& par, edm::Consume
   inputCollectionToken = iC.consumes<reco::TrackCollection>(par.getParameter<edm::InputTag>("input"));
 }
 
-
+void MuonTrackingRegionBuilder::fillDescriptions(edm::ParameterSetDescription& desc) {
+  desc.add<double>("EtaR_UpperLimit_Par1",0.25);
+  desc.add<double>("Z_fixed",100);
+}
 //
 // Member function to be compatible with TrackingRegionProducerFactory: create many ROI for many tracks
 //
