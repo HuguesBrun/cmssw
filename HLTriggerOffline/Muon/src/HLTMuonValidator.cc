@@ -150,7 +150,7 @@ HLTMuonValidator::stepLabels(const vector<string>& modules) {
     else
       return vector<string>();
   }
-  if (steps.size() < 2 || ((steps[1] != "L1")&&(steps[1] != "Tk")))
+  if (steps.size() < 2 || ((steps[1] != "L1")&&(steps[2] != "Tk")))
     return vector<string>();
   return steps;
 
