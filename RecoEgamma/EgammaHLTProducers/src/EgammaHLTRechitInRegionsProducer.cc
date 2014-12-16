@@ -121,79 +121,127 @@ void EgammaHLTRechitInRegionsProducer::fillDescriptions(edm::ConfigurationDescri
 
 void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::EventSetup& es) {
 
-  // get the collection geometry:
+  //// get the collection geometry:
   edm::ESHandle<CaloGeometry> geoHandle;
   es.get<CaloGeometryRecord>().get(geoHandle);
   const CaloGeometry& geometry = *geoHandle;
   const CaloSubdetectorGeometry *geometry_p;
   std::auto_ptr<const CaloSubdetectorTopology> topology;
-    
-  //Get the L1 EM Particle Collection
-  //Get the L1 EM Particle Collection
-  edm::Handle< l1extra::L1EmParticleCollection > emIsolColl ;
+   
+  ////Get the L1 EM Particle Collection
+  ////Get the L1 EM Particle Collection
+
+  edm::Handle<edm::View<reco::Candidate> > emIsolColl;
   if(doIsolated_) 
     evt.getByLabel(l1TagIsolated_, emIsolColl);
 
-  //Get the L1 EM Particle Collection
-  edm::Handle< l1extra::L1EmParticleCollection > emNonIsolColl ;
+  edm::Handle<edm::View<reco::Candidate> > emNonIsolColl ;
   evt.getByLabel(l1TagNonIsolated_, emNonIsolColl);
-  
-  // Get the CaloGeometry
-  edm::ESHandle<L1CaloGeometry> l1CaloGeom ;
-  es.get<L1CaloGeometryRecord>().get(l1CaloGeom) ;
-
   std::vector<EcalEtaPhiRegion> regions;
   if(doIsolated_) {
-    for( l1extra::L1EmParticleCollection::const_iterator emItr = emIsolColl->begin(); emItr != emIsolColl->end() ;++emItr ) {
+    for( edm::View<reco::Candidate>::const_iterator emItr = emIsolColl->begin(); emItr != emIsolColl->end() ;++emItr ) {
+    
       if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
-
-	// Access the GCT hardware object corresponding to the L1Extra EM object.
-	int etaIndex = emItr->gctEmCand()->etaIndex();
-	int phiIndex = emItr->gctEmCand()->phiIndex();
-
-	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
-	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
-	double etaHigh = l1CaloGeom->etaBinHighEdge(etaIndex);
-	double phiLow  = l1CaloGeom->emJetPhiBinLowEdge( phiIndex ) ;
-	double phiHigh = l1CaloGeom->emJetPhiBinHighEdge( phiIndex ) ;
-
-	etaLow -= regionEtaMargin_;
-	etaHigh += regionEtaMargin_;
-	phiLow -= regionPhiMargin_;
-	phiHigh += regionPhiMargin_;
-
-	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+  
+   	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
+  	double etaLow  = emItr->eta() - regionEtaMargin_;
+  	double etaHigh = emItr->eta() + regionEtaMargin_;
+  	double phiLow  = emItr->phi() - regionPhiMargin_;
+  	double phiHigh = emItr->phi() + regionPhiMargin_;
+	
+  	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
       }
     }
   }
   
   if(!doIsolated_ or (l1LowerThrIgnoreIsolation_ < 64)) {
-    for( l1extra::L1EmParticleCollection::const_iterator emItr = emNonIsolColl->begin(); emItr != emNonIsolColl->end() ;++emItr ) {
+    for( edm::View<reco::Candidate>::const_iterator emItr = emNonIsolColl->begin(); emItr != emNonIsolColl->end() ;++emItr ) {
       
       if(doIsolated_ and (emItr->et() < l1LowerThrIgnoreIsolation_)) 
-	continue;
-
+  	continue;
+  
       if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
-	
-	// Access the GCT hardware object corresponding to the L1Extra EM object.
-	int etaIndex = emItr->gctEmCand()->etaIndex();
-	int phiIndex = emItr->gctEmCand()->phiIndex();
-	
-	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
-	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
-	double etaHigh = l1CaloGeom->etaBinHighEdge(etaIndex);
-	double phiLow  = l1CaloGeom->emJetPhiBinLowEdge(phiIndex);
-	double phiHigh = l1CaloGeom->emJetPhiBinHighEdge(phiIndex);
+  	  	
+  	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
+	double etaLow  = emItr->eta() - regionEtaMargin_;
+  	double etaHigh = emItr->eta() + regionEtaMargin_;
+  	double phiLow  = emItr->phi() - regionPhiMargin_;
+  	double phiHigh = emItr->phi() + regionPhiMargin_;
 
-	etaLow -= regionEtaMargin_;
-	etaHigh += regionEtaMargin_;
-	phiLow -= regionPhiMargin_;
-	phiHigh += regionPhiMargin_;
-
-	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+  	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
       }
     }
   }
+
+  //edm::Handle< l1extra::L1EmParticleCollection > emIsolColl ;
+  //if(doIsolated_) 
+  //  evt.getByLabel(l1TagIsolated_, emIsolColl);
+  //
+  ////Get the L1 EM Particle Collection
+  //edm::Handle< l1extra::L1EmParticleCollection > emNonIsolColl ;
+  //evt.getByLabel(l1TagNonIsolated_, emNonIsolColl);
+  //
+  //// Get the CaloGeometry
+  //edm::ESHandle<L1CaloGeometry> l1CaloGeom ;
+  //es.get<L1CaloGeometryRecord>().get(l1CaloGeom) ;
+  //
+  //std::vector<EcalEtaPhiRegion> regions;
+  //if(doIsolated_) {
+  //  for( l1extra::L1EmParticleCollection::const_iterator emItr = emIsolColl->begin(); emItr != emIsolColl->end() ;++emItr ) {
+  //    if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
+  //
+  //	// Access the GCT hardware object corresponding to the L1Extra EM object.
+  //	int etaIndex = emItr->gctEmCand()->etaIndex();
+  //	int phiIndex = emItr->gctEmCand()->phiIndex();
+  //
+  //	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
+  //	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
+  //	double etaHigh = l1CaloGeom->etaBinHighEdge(etaIndex);
+  //	double phiLow  = l1CaloGeom->emJetPhiBinLowEdge( phiIndex ) ;
+  //	double phiHigh = l1CaloGeom->emJetPhiBinHighEdge( phiIndex ) ;
+  //
+  //	etaLow -= regionEtaMargin_;
+  //	etaHigh += regionEtaMargin_;
+  //	phiLow -= regionPhiMargin_;
+  //	phiHigh += regionPhiMargin_;
+  //
+  //	std::cout << "ETA: " << emItr->eta() << " " << etaLow << " " << etaHigh << std::endl;
+  //	std::cout << "PHI: " << emItr->phi() << " " << phiLow << " " << phiHigh << std::endl;
+  //
+  //	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+  //    }
+  //  }
+  //}
+  //
+  //if(!doIsolated_ or (l1LowerThrIgnoreIsolation_ < 64)) {
+  //  for( l1extra::L1EmParticleCollection::const_iterator emItr = emNonIsolColl->begin(); emItr != emNonIsolColl->end() ;++emItr ) {
+  //    
+  //    if(doIsolated_ and (emItr->et() < l1LowerThrIgnoreIsolation_)) 
+  //	continue;
+  //
+  //    if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
+  //	
+  //	// Access the GCT hardware object corresponding to the L1Extra EM object.
+  //	int etaIndex = emItr->gctEmCand()->etaIndex();
+  //	int phiIndex = emItr->gctEmCand()->phiIndex();
+  //	
+  //	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
+  //	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
+  //	double etaHigh = l1CaloGeom->etaBinHighEdge(etaIndex);
+  //	double phiLow  = l1CaloGeom->emJetPhiBinLowEdge(phiIndex);
+  //	double phiHigh = l1CaloGeom->emJetPhiBinHighEdge(phiIndex);
+  //
+  //	etaLow -= regionEtaMargin_;
+  //	etaHigh += regionEtaMargin_;
+  //	phiLow -= regionPhiMargin_;
+  //	phiHigh += regionPhiMargin_;
+  //
+  //	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+  //    }
+  //  }
+  //}
+
+
   if (useUncalib_) {
     edm::Handle<EcalUncalibratedRecHitCollection> urhcH[3];
     for (unsigned int i=0; i<hitLabels.size(); i++) {
@@ -201,40 +249,40 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
       
       evt.getByToken(uncalibHitTokens[i], urhcH[i]);  
       if (!(urhcH[i].isValid())) {
-	edm::LogError("ProductNotFound")<< "could not get a handle on the EcalRecHitCollection! (" << hitLabels[i].encode() << ")" << std::endl;
-	return;
+  	edm::LogError("ProductNotFound")<< "could not get a handle on the EcalRecHitCollection! (" << hitLabels[i].encode() << ")" << std::endl;
+  	return;
       }
       const EcalUncalibratedRecHitCollection* uncalibRecHits = urhcH[i].product();
       
       if (uncalibRecHits->size() == 0)
-	continue;
+  	continue;
       
       if ((*uncalibRecHits)[0].id().subdetId() == EcalBarrel) {
-	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
-	topology.reset(new EcalBarrelTopology(geoHandle));
+  	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
+  	topology.reset(new EcalBarrelTopology(geoHandle));
       } else if ((*uncalibRecHits)[0].id().subdetId() == EcalEndcap) {
-	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
-	topology.reset(new EcalEndcapTopology(geoHandle));
+  	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
+  	topology.reset(new EcalEndcapTopology(geoHandle));
       } else if ((*uncalibRecHits)[0].id().subdetId() == EcalPreshower) {
-	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-	topology.reset(new EcalPreshowerTopology (geoHandle));
+  	geometry_p = geometry.getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  	topology.reset(new EcalPreshowerTopology (geoHandle));
       } else throw(std::runtime_error("\n\nProducer encountered invalied ecalhitcollection type.\n\n"));
       
       if(regions.size() != 0) {
-	EcalUncalibratedRecHitCollection::const_iterator it;
-	
-	for (it = uncalibRecHits->begin(); it != uncalibRecHits->end(); it++){
-	  const CaloCellGeometry *this_cell = (*geometry_p).getGeometry(it->id());
-	  GlobalPoint position = this_cell->getPosition();
-	  
-	  std::vector<EcalEtaPhiRegion>::const_iterator region;
-	  for (region=regions.begin(); region!=regions.end(); region++) {
-	    if (region->inRegion(position))
-	      uhits->push_back(*it);
-	  }
-	}
+  	EcalUncalibratedRecHitCollection::const_iterator it;
+  	
+  	for (it = uncalibRecHits->begin(); it != uncalibRecHits->end(); it++){
+  	  const CaloCellGeometry *this_cell = (*geometry_p).getGeometry(it->id());
+  	  GlobalPoint position = this_cell->getPosition();
+  	  
+  	  std::vector<EcalEtaPhiRegion>::const_iterator region;
+  	  for (region=regions.begin(); region!=regions.end(); region++) {
+  	    if (region->inRegion(position))
+  	      uhits->push_back(*it);
+  	  }
+  	}
       }
-
+  
       evt.put(uhits, productLabels[i]);
     }
   } else {
