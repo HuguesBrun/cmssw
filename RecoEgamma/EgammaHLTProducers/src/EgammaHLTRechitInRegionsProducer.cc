@@ -26,20 +26,8 @@
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
 
-// Geometry
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/CaloTopology/interface/EcalBarrelTopology.h"
-#include "Geometry/CaloTopology/interface/EcalEndcapTopology.h"
-#include "Geometry/CaloTopology/interface/EcalPreshowerTopology.h"
 
-// Level 1 Trigger
-#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
-#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
-#include "CondFormats/L1TObjects/interface/L1CaloGeometry.h"
-#include "CondFormats/DataRecord/interface/L1CaloGeometryRecord.h"
+
 
 // EgammaCoreTools
 //#include "RecoEcal/EgammaCoreTools/interface/PositionCalc.h"
@@ -50,8 +38,8 @@
 
 //#include "DataFormats/Math/interface/deltaR.h"
 
-
-EgammaHLTRechitInRegionsProducer::EgammaHLTRechitInRegionsProducer(const edm::ParameterSet& ps) {
+template<typename T1>
+HLTRechitInRegionsProducer<T1>::HLTRechitInRegionsProducer(const edm::ParameterSet& ps) {
 
   useUncalib_    = ps.getParameter<bool>("useUncalib");
   //hitproducer_   = ps.getParameter<edm::InputTag>("ecalhitproducer");
@@ -89,11 +77,12 @@ EgammaHLTRechitInRegionsProducer::EgammaHLTRechitInRegionsProducer(const edm::Pa
   }
 }
 
-
-EgammaHLTRechitInRegionsProducer::~EgammaHLTRechitInRegionsProducer()
+template<typename T1>
+HLTRechitInRegionsProducer<T1>::~HLTRechitInRegionsProducer()
 {}
 
-void EgammaHLTRechitInRegionsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+template<typename T1>
+void HLTRechitInRegionsProducer<T1>::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   std::vector<std::string> productTags;
   productTags.push_back("EcalRegionalRecHitsEB");
@@ -116,10 +105,12 @@ void EgammaHLTRechitInRegionsProducer::fillDescriptions(edm::ConfigurationDescri
   desc.add<double>("regionPhiMargin", 0.4);
   //desc.add<std::vector<std::string> >("RecHitFlagToBeExcluded", std::vector<std::string>());
   //desc.add<std::vector<std::string> >("RecHitSeverityToBeExcluded", std::vector<std::string>());
-  descriptions.add(("hltEgammaHLTRechitInRegionsProducer"), desc);  
+  //descriptions.add(("hltEgammaHLTRechitInRegionsProducer"), desc);
+    descriptions.add(std::string("hlt")+std::string(typeid(HLTRechitInRegionsProducer<T1>).name()), desc);
 }
 
-void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::EventSetup& es) {
+template<typename T1>
+void HLTRechitInRegionsProducer<T1>::produce(edm::Event& evt, const edm::EventSetup& es) {
 
   // get the collection geometry:
   edm::ESHandle<CaloGeometry> geoHandle;
@@ -130,12 +121,12 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
     
   //Get the L1 EM Particle Collection
   //Get the L1 EM Particle Collection
-  edm::Handle< l1extra::L1EmParticleCollection > emIsolColl ;
+  edm::Handle< T1Collection > emIsolColl ;
   if(doIsolated_) 
     evt.getByLabel(l1TagIsolated_, emIsolColl);
 
   //Get the L1 EM Particle Collection
-  edm::Handle< l1extra::L1EmParticleCollection > emNonIsolColl ;
+  edm::Handle< T1 > emNonIsolColl ;
   evt.getByLabel(l1TagNonIsolated_, emNonIsolColl);
   
   // Get the CaloGeometry
@@ -144,12 +135,12 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
 
   std::vector<EcalEtaPhiRegion> regions;
   if(doIsolated_) {
-    for( l1extra::L1EmParticleCollection::const_iterator emItr = emIsolColl->begin(); emItr != emIsolColl->end() ;++emItr ) {
+    /*for( T1iterator emItr = emIsolColl->begin(); emItr != emIsolColl->end() ;++emItr ) {
       if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
 
 	// Access the GCT hardware object corresponding to the L1Extra EM object.
-	int etaIndex = emItr->gctEmCand()->etaIndex();
-	int phiIndex = emItr->gctEmCand()->phiIndex();
+          int etaIndex = 0;//emItr->gctEmCand()->etaIndex();
+          int phiIndex = 0;//emItr->gctEmCand()->phiIndex();
 
 	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
 	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
@@ -164,11 +155,12 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
 
 	regions.push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
       }
-    }
+    }*/
+    getEtaPhiRegions(&regions, *emIsolColl, *l1CaloGeom);
   }
   
   if(!doIsolated_ or (l1LowerThrIgnoreIsolation_ < 64)) {
-    for( l1extra::L1EmParticleCollection::const_iterator emItr = emNonIsolColl->begin(); emItr != emNonIsolColl->end() ;++emItr ) {
+    for( T1iterator emItr = emNonIsolColl->begin(); emItr != emNonIsolColl->end() ;++emItr ) {
       
       if(doIsolated_ and (emItr->et() < l1LowerThrIgnoreIsolation_)) 
 	continue;
@@ -176,8 +168,8 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
       if ((emItr->et() > l1LowerThr_) and (emItr->et() < l1UpperThr_)) {
 	
 	// Access the GCT hardware object corresponding to the L1Extra EM object.
-	int etaIndex = emItr->gctEmCand()->etaIndex();
-	int phiIndex = emItr->gctEmCand()->phiIndex();
+          int etaIndex = 0;//emItr->gctEmCand()->etaIndex();
+          int phiIndex = 0.;//emItr->gctEmCand()->phiIndex();
 	
 	// Use the L1CaloGeometry to find the eta, phi bin boundaries.
 	double etaLow  = l1CaloGeom->etaBinLowEdge(etaIndex);
@@ -283,4 +275,55 @@ void EgammaHLTRechitInRegionsProducer::produce(edm::Event& evt, const edm::Event
     }
   }
 }
+
+template<>
+void HLTRechitInRegionsProducer<l1extra::L1EmParticle>::getEtaPhiRegions(std::vector<EcalEtaPhiRegion> * theRegions, T1Collection theCandidateCollection, const L1CaloGeometry& l1CaloGeom){
+    //for( T1iterator emItr = theCandidateCollection.begin(); emItr != theCandidateCollection.end() ;++emItr ) {
+        for (unsigned int candItr = 0 ; candItr < theCandidateCollection.size(); candItr++){
+            l1extra::L1EmParticle emItr = theCandidateCollection.at(candItr);
+        if ((emItr.et() > l1LowerThr_) and (emItr.et() < l1UpperThr_)) {
+            
+            // Access the GCT hardware object corresponding to the L1Extra EM object.
+            int etaIndex = emItr.gctEmCand()->etaIndex();
+            int phiIndex = emItr.gctEmCand()->phiIndex();
+            
+            // Use the L1CaloGeometry to find the eta, phi bin boundaries.
+            double etaLow  = l1CaloGeom.etaBinLowEdge(etaIndex);
+            double etaHigh = l1CaloGeom.etaBinHighEdge(etaIndex);
+            double phiLow  = l1CaloGeom.emJetPhiBinLowEdge( phiIndex ) ;
+            double phiHigh = l1CaloGeom.emJetPhiBinHighEdge( phiIndex ) ;
+            
+            etaLow -= regionEtaMargin_;
+            etaHigh += regionEtaMargin_;
+            phiLow -= regionPhiMargin_;
+            phiHigh += regionPhiMargin_;
+            
+            theRegions->push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+        }
+    }
+}
+
+template<typename T1>
+void HLTRechitInRegionsProducer<T1>::getEtaPhiRegions(std::vector<EcalEtaPhiRegion> * theRegions, T1Collection theCandidateCollection, const L1CaloGeometry& l1CaloGeom){
+    //for( T1iterator emItr = theCandidateCollection.begin(); emItr != theCandidateCollection.end() ;++emItr ) {
+    for (unsigned int candItr = 0 ; candItr < theCandidateCollection.size(); candItr++){
+        T1 emItr = theCandidateCollection.at(candItr);
+        if ((emItr.et() > l1LowerThr_) and (emItr.et() < l1UpperThr_)) {
+            
+           double etaLow = emItr.eta() - regionEtaMargin_;
+           double etaHigh = emItr.eta() + regionEtaMargin_;
+           double phiLow = emItr.phi() - regionPhiMargin_;
+           double phiHigh = emItr.phi() + regionPhiMargin_;
+            
+            theRegions->push_back(EcalEtaPhiRegion(etaLow,etaHigh,phiLow,phiHigh));
+        }
+    }
+}
+
+typedef HLTRechitInRegionsProducer<l1extra::L1EmParticle> EgammaHLTRechitInRegionsProducer;
+DEFINE_FWK_MODULE(EgammaHLTRechitInRegionsProducer);
+
+//typedef HLTRechitInRegionsProducer<reco::CandidateCollection> MuonHLTRechitInRegionsProducer;
+//DEFINE_FWK_MODULE(MuonHLTRechitInRegionsProducer);
+
 
