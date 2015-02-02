@@ -92,7 +92,7 @@ void HLTRechitInRegionsProducer<T1>::fillDescriptions(edm::ConfigurationDescript
   desc.add<double>("l1LowerThrIgnoreIsolation", 0.0);
   desc.add<double>("regionEtaMargin", 0.14);
   desc.add<double>("regionPhiMargin", 0.4);
-  descriptions.add(std::string("hlt")+std::string(typeid(HLTRechitInRegionsProducer<T1>).name()), desc);
+  descriptions.add(defaultModuleLabel<HLTRechitInRegionsProducer<T>>(), desc);
 }
 
 template<typename T1>
