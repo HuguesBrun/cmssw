@@ -262,9 +262,3 @@ void HLTRechitInRegionsProducer<T1>::getEtaPhiRegions(std::vector<EcalEtaPhiRegi
     }
 }
 
-typedef HLTRechitInRegionsProducer<l1extra::L1EmParticle> EgammaHLTRechitInRegionsProducer;
-DEFINE_FWK_MODULE(EgammaHLTRechitInRegionsProducer);
-
-typedef HLTRechitInRegionsProducer<reco::RecoChargedCandidate> MuonHLTRechitInRegionsProducer;
-DEFINE_FWK_MODULE(MuonHLTRechitInRegionsProducer);
-
