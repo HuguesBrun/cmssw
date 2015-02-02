@@ -39,7 +39,7 @@
 
 // Class header file
 #include "RecoEgamma/EgammaHLTProducers/interface/HLTRechitInRegionsProducer.h"
-
+#include "HLTrigger/HLTcore/interface/defaultModuleLabel.h"
 template<typename T1>
 HLTRechitInRegionsProducer<T1>::HLTRechitInRegionsProducer(const edm::ParameterSet& ps):
   useUncalib_      (ps.getParameter<bool>("useUncalib")),
@@ -92,7 +92,7 @@ void HLTRechitInRegionsProducer<T1>::fillDescriptions(edm::ConfigurationDescript
   desc.add<double>("l1LowerThrIgnoreIsolation", 0.0);
   desc.add<double>("regionEtaMargin", 0.14);
   desc.add<double>("regionPhiMargin", 0.4);
-  descriptions.add(defaultModuleLabel<HLTRechitInRegionsProducer<T>>(), desc);
+  descriptions.add(defaultModuleLabel<HLTRechitInRegionsProducer<T1>>(), desc);
 }
 
 template<typename T1>
