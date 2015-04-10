@@ -125,6 +125,7 @@ vector<string>
 HLTMuonValidator::stepLabels(const vector<string>& modules) {
     vector<string> steps(1, "All");
     for (size_t i = 0; i < modules.size(); i++) {
+        std::cout << "filter=" << modules[i] << std::endl;
         if ((modules[i].find("IsoFiltered") != string::npos)){
             if (modules[i].find("L3") != string::npos)
                 steps.push_back("L3TkIso");
@@ -154,6 +155,11 @@ HLTMuonValidator::stepLabels(const vector<string>& modules) {
             steps.push_back("L1");
         else
             return vector<string>();
+    }
+    
+    for (unsigned int i = 0 ; i < steps.size() ; i++){
+        std::cout << "step" << i << "= " << steps[i] << std::endl;
+        
     }
 
     if (steps.size() < 2 || ((steps[1] != "L1")&&(steps[1] != "Tk")))

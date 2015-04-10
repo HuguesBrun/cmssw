@@ -196,6 +196,7 @@ HLTMuonPlotter::analyze(const Event & iEvent, const EventSetup & iSetup)
     for (size_t i = 0; i < nFilters; i++) {
       const int hltStep = i - 1;
       InputTag tag = InputTag(moduleLabels_[i], "", hltProcessName_);
+        std::cout << "filter=" << moduleLabels_[i] << " step=" << hltStep << std::endl;
       size_t iFilter = rawTriggerEvent->filterIndex(tag);
       if (iFilter < rawTriggerEvent->size()) {
         if (i == 0)
