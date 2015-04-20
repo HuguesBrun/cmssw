@@ -11,6 +11,8 @@
 #include "DataFormats/Candidate/interface/CandAssociation.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+
 
 #include "RecoEgamma/EgammaIsolationAlgos/interface/HcalPFClusterIsolation.h"
 
@@ -104,6 +106,8 @@ void EgammaHcalPFClusterIsolationProducer<T1>::produce(edm::Event& iEvent, const
 
 typedef EgammaHcalPFClusterIsolationProducer<reco::GsfElectron> ElectronHcalPFClusterIsolationProducer;
 typedef EgammaHcalPFClusterIsolationProducer<reco::Photon> PhotonHcalPFClusterIsolationProducer;
+typedef EgammaHcalPFClusterIsolationProducer<reco::Muon> MuonHcalPFClusterIsolationProducer;
 
 DEFINE_FWK_MODULE(ElectronHcalPFClusterIsolationProducer);
 DEFINE_FWK_MODULE(PhotonHcalPFClusterIsolationProducer);
+DEFINE_FWK_MODULE(MuonHcalPFClusterIsolationProducer);
