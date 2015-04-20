@@ -91,6 +91,8 @@ bool EcalPFClusterIsolation<T1>::computedRVeto(T1Ref candRef, reco::PFClusterRef
   return true;
 }
 
+
+
 template<>
 bool EcalPFClusterIsolation<reco::RecoChargedCandidate>::computedRVeto(T1Ref candRef, reco::PFClusterRef pfclu) {
 
@@ -101,7 +103,18 @@ bool EcalPFClusterIsolation<reco::RecoChargedCandidate>::computedRVeto(T1Ref can
     return true;
 }
 
+template<>
+bool EcalPFClusterIsolation<reco::Muon>::computedRVeto(T1Ref candRef, reco::PFClusterRef pfclu) {
+    
+    float dR2 = deltaR2(candRef->eta(), candRef->phi(), pfclu->eta(), pfclu->phi());
+    if(dR2 > (drMax_*drMax_) || dR2 < drVeto2_)
+        return false;
+    else
+        return true;
+}
+
 template class EcalPFClusterIsolation<reco::RecoEcalCandidate>;
 template class EcalPFClusterIsolation<reco::RecoChargedCandidate>;
+template class EcalPFClusterIsolation<reco::Muon>;
 template class EcalPFClusterIsolation<reco::Photon>;
 template class EcalPFClusterIsolation<reco::GsfElectron>;

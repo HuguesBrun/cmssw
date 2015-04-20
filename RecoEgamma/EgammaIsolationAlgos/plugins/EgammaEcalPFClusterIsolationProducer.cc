@@ -79,6 +79,8 @@ void EgammaEcalPFClusterIsolationProducer<T1>::produce(edm::Event& iEvent, const
 
 typedef EgammaEcalPFClusterIsolationProducer<reco::GsfElectron> ElectronEcalPFClusterIsolationProducer;
 typedef EgammaEcalPFClusterIsolationProducer<reco::Photon> PhotonEcalPFClusterIsolationProducer;
+typedef EgammaEcalPFClusterIsolationProducer<reco::Muon> MuonEcalPFClusterIsolationProducer;
 
 DEFINE_FWK_MODULE(ElectronEcalPFClusterIsolationProducer);
 DEFINE_FWK_MODULE(PhotonEcalPFClusterIsolationProducer);
+DEFINE_FWK_MODULE(MuonEcalPFClusterIsolationProducer);
