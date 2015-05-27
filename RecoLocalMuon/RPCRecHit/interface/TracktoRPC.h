@@ -62,7 +62,7 @@ class TracktoRPC {
 public:
 
 
-  explicit TracktoRPC(edm::Handle<reco::TrackCollection> alltracks,const edm::EventSetup& iSetup, const edm::Event& iEvent,bool debug, const edm::ParameterSet& iConfig,edm::InputTag& tracklabel);
+  explicit TracktoRPC(edm::Handle<reco::TrackCollection> alltracks,const edm::EventSetup& iSetup, const edm::Event& iEvent,bool debug, const edm::ParameterSet& iConfig, const edm::InputTag& tracklabel);
 
   ~TracktoRPC();
   RPCRecHitCollection* thePoints(){return _ThePoints;}
@@ -111,13 +111,11 @@ private:
 
 class ObjectMap2{
 public:
-  static ObjectMap2* GetInstance(const edm::EventSetup& iSetup);
-  std::set<RPCDetId> GetRolls(DTStationIndex2 dtstationindex){return mapInstance->rollstoreDT[dtstationindex];}
+  ObjectMap2* GetInstance(const edm::EventSetup& iSetup);
+  std::set<RPCDetId> GetRolls(DTStationIndex2 dtstationindex){return rollstoreDT[dtstationindex];}
 //protected:
   std::map<DTStationIndex2,std::set<RPCDetId> > rollstoreDT;
   ObjectMap2(const edm::EventSetup& iSetup);
-private:
-  static ObjectMap2* mapInstance;
 }; 
 class CSCStationIndex2{
 public:
@@ -153,13 +151,11 @@ private:
 
 class ObjectMap2CSC{
 public:
-  static ObjectMap2CSC* GetInstance(const edm::EventSetup& iSetup);
-  std::set<RPCDetId> GetRolls(CSCStationIndex2 cscstationindex){return mapInstance->rollstoreCSC[cscstationindex];}
+  ObjectMap2CSC* GetInstance(const edm::EventSetup& iSetup);
+  std::set<RPCDetId> GetRolls(CSCStationIndex2 cscstationindex){return rollstoreCSC[cscstationindex];}
 //protected:
   std::map<CSCStationIndex2,std::set<RPCDetId> > rollstoreCSC;
   ObjectMap2CSC(const edm::EventSetup& iSetup);
-private:
-  static ObjectMap2CSC* mapInstance;
 }; 
 
 #endif
