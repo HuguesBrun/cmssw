@@ -24,7 +24,7 @@ hltMuonValidator = cms.EDAnalyzer("HLTMuonValidator",
     parametersPhi      = cms.vdouble(50, -3.142, 3.142),
 
     # set criteria for matching at L1, L2, L3
-    cutsDr = cms.vdouble(0.4, 0.4, 0.015),
+    cutsDr = cms.vdouble(0.4, 0.4, 0.1),
     # parameters for attempting an L1 match using a propagator
     maxDeltaPhi = cms.double(0.4),
     maxDeltaR   = cms.double(0.4),
