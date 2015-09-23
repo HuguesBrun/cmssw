@@ -492,6 +492,7 @@ HLTDebugFEVT  = cms.PSet(
         'keep *_hltL3TrajSeedOIState_*_*',
         'keep *_hltL3TrajectorySeed_*_*',
         'keep *_hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f18QL3crIsoRhoFiltered0p15_*_*',
+	'keep *_hltIter2HighPtTkMuMerged_*_*',
         'keep *_hltLeadingCentralJets30SingleTopEle27_*_*',
         'keep *_hltLeadingCentralJets30SingleTopIsoMu24_*_*',
         'keep *_hltMet_*_*',

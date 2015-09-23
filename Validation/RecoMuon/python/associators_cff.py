@@ -150,12 +150,7 @@ tpToL3TkTrackTrackAssociation = cms.EDProducer("TrackAssociatorEDProducer",
     label_tr = cms.InputTag('hltL3TkTracksFromL2','')
 )
 
-tpToL3L2TrackTrackAssociation = cms.EDProducer("TrackAssociatorEDProducer",
-    ignoremissingtrackcollection=cms.untracked.bool(True),
-    associator = cms.string('onlineTrackAssociatorByHits'),
-    label_tp = cms.InputTag('mix','MergedTrackTruth'),
-    label_tr = cms.InputTag('hltL3Muons:L2Seeded')
-)
+
 
 
 
@@ -183,6 +178,7 @@ tpToL3TkMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociato
 tpToL2MuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL2UpdMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 tpToL3MuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
+tpToHltTrackerMuonAssociation = SimMuon.MCTruth.MuonAssociatorByHits_cfi.muonAssociatorByHits.clone()
 
 tpToTkMuonAssociation.tpTag = 'mix:MergedTrackTruth'
 #tpToTkMuonAssociation.tracksTag = 'generalTracks'
@@ -302,6 +298,17 @@ tpToL3MuonAssociation.UseMuon = True
 tpToL3MuonAssociation.ignoreMissingTrackCollection = True
 tpToL3MuonAssociation.UseSplitting = False
 tpToL3MuonAssociation.UseGrouped = False
+
+tpToHltTrackerMuonAssociation.tpTag = 'mix:MergedTrackTruth'
+tpToHltTrackerMuonAssociation.tracksTag = 'hltIter2HighPtTkMuMerged'
+tpToHltTrackerMuonAssociation.DTrechitTag = 'hltDt1DRecHits'
+tpToHltTrackerMuonAssociation.UseTracker = True
+tpToHltTrackerMuonAssociation.UseMuon = False
+tpToHltTrackerMuonAssociation.ignoreMissingTrackCollection = True
+tpToHltTrackerMuonAssociation.UseSplitting = False
+tpToHltTrackerMuonAssociation.UseGrouped = False
+
+
 
 #
 # Associators for cosmics:
