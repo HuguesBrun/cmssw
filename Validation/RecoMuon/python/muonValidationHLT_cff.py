@@ -95,11 +95,24 @@ l3MuonMuTrackV.usetracker = True
 l3MuonMuTrackV.usemuon = True
 
 
+tkMuonTrackV = Validation.RecoMuon.MuonTrackValidator_cfi.muonTrackValidator.clone()
+tkMuonTrackV.label_tp_effic = 'mix:MergedTrackTruth'
+tkMuonTrackV.associatormap = 'tpToHltTrackerMuonAssociation'
+tkMuonTrackV.label = ('hltIter2HighPtTkMuMerged',)
+tkMuonTrackV.associators = ('MuonAssociationByHits',)
+tkMuonTrackV.dirName = 'HLT/Muon/MultiTrack/'
+#l3MuonMuTrackV.beamSpot = 'hltOfflineBeamSpot'
+tkMuonTrackV.ignoremissingtrackcollection=True
+tkMuonTrackV.usetracker = True
+tkMuonTrackV.usemuon = False
+
+
 # The full Muon HLT validation sequence
 muonValidationHLT_seq = cms.Sequence(tpToL2MuonAssociation + l2MuonMuTrackV
                                     +tpToL2UpdMuonAssociation + l2UpdMuonMuTrackV
                                     +tpToL3TkMuonAssociation + l3TkMuonMuTrackV
                                     +tpToL3MuonAssociation + l3MuonMuTrackV
+                                    +tpToHltTrackerMuonAssociation + tkMuonTrackV
                                     )
 
 recoMuonValidationHLT_seq = cms.Sequence(muonValidationHLT_seq)
