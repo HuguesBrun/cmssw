@@ -15,14 +15,17 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/data/Run2015D/DoubleEG/MINIAOD/PromptReco-v4/000/258/159/00000/027612B0-306C-E511-BD47-02163E014496.root'),
+    fileNames = cms.untracked.vstring('file:/tmp/hbrun/theDY_miniAOD.root')
 )
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_Prompt_v4', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v6', '')
 
 process.getGBR25ns = cms.EDAnalyzer("GBRForestGetterFromDB",
     grbForestName = cms.string("gedelectron_p4combination_25ns"),
+                                    regressionKey = cms.vstring("gedelectron_EBCorrection_25ns","gedelectron_EECorrection_25ns"),
+                                    uncertaintyKey = cms.vstring("gedelectron_EBUncertainty_25ns","gedelectron_EEUncertainty_25ns"),
+                                    combinationKey = cms.string("gedelectron_p4combination_25ns"),
     outputFileName = cms.untracked.string("GBRForest_data_25ns.root"),
 )
     
@@ -32,6 +35,4 @@ process.getGBR50ns = cms.EDAnalyzer("GBRForestGetterFromDB",
 )
 
 process.path = cms.Path(
-    process.getGBR25ns +
-    process.getGBR50ns
-)
+    process.getGBR25ns)
